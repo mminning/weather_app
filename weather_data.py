@@ -5,7 +5,8 @@ import requests as rq
 # GET COORDINATES FROM CITY, STATE
 def get_coordinates(city, state):
     """ gets coordinates for a city and a state.
-    Args: city (string), state (string, 2 letter ALL CAPS abbreviation)"""
+    Args: city (string), state (string, 2 letter ALL CAPS abbreviation)
+    returns: latitude, longitude"""
     geolocator = Nominatim(user_agent="basshog")
 
     try:
@@ -22,24 +23,22 @@ def get_coordinates(city, state):
         # Handle cases where the geocoding service times out
         return get_coordinates(city, state)
 
-#usage
-coords = get_coordinates(city="Wichita", state="KS")
+def get_cityforecast(city, state):
+    coordinates = get_coordinates(city, state)
+    if coordinates:
+        latitude = coordinates[0]
+        longitude = coordinates[1]
+        getforecast = rq.get(f"https://api.weather.gov/points/{latitude},{longitude}")
+        getforecast_content = getforecast.json()
+        forecast_url = getforecast_content["properties"]["forecast"]
+        return forecast_url
+    else:
+        error_message = "City not found."
+        return error_message
 
-if coords:
-    latitude = coords[0]
-    longitude = coords[1]
-    #print(f"Coordinates for {city}, {state}:")
-    #print(f"Latitude: {coords[0]}")
-    #print(f"Longitude: {coords[1]}")
-else:
-    print("Location not found.")
-
-# GET WEATHERDATA FROM COORDS
-def get_cityforecast(latitude, longitude):
-    getforecast = rq.get(f"https://api.weather.gov/points/{latitude},{longitude}")
-    getforecast_content = getforecast.json()
-    forecast_url = getforecast_content["properties"]["forecast"]
-    return forecast_url
-
-url = get_cityforecast(latitude, longitude)
+# Get Coordinates
+url = get_cityforecast("Wiklj", "KS")
+coordinates = get_coordinates("Wichita", "KS")
+print(coordinates)
 print(url)
+
