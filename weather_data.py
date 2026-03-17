@@ -23,22 +23,35 @@ def get_coordinates(city, state):
         # Handle cases where the geocoding service times out
         return get_coordinates(city, state)
 
-def get_cityforecast(city, state):
+def get_temperatures(city, state, days):
     coordinates = get_coordinates(city, state)
     if coordinates:
         latitude = coordinates[0]
         longitude = coordinates[1]
-        getforecast = rq.get(f"https://api.weather.gov/points/{latitude},{longitude}")
-        getforecast_content = getforecast.json()
-        forecast_url = getforecast_content["properties"]["forecast"]
-        return forecast_url
+        get_city = rq.get(f"https://api.weather.gov/points/{latitude},{longitude}")
+        get_city_data = get_city.json()
+        forecast_hourly_url = get_city_data["properties"]["forecastHourly"]
+
+        #get temperature data for specific time range
+        forecast_hourly_data = rq.get(forecast_hourly_url)
+        forecast_hourly_data = forecast_hourly_data.json()
+        temps = [temp["temperature"] for temp in forecast_hourly_data["properties"]["periods"]]
+        temps = temps[:24*days:4]
+
+        dates = [date["startTime"] for date in forecast_hourly_data["properties"]["periods"]]
+        dates = dates[:24*days:4]
+
+        temp_date_pairs = dict(zip(dates, temps))
+        return temp_date_pairs
     else:
         error_message = "City not found."
         return error_message
 
-# Get Coordinates
-url = get_cityforecast("Wiklj", "KS")
-coordinates = get_coordinates("Wichita", "KS")
-print(coordinates)
-print(url)
+# Get Data (test)
+if __name__ == "__main__":
+    url = get_temperatures("Wichita", "KS", 2)
+    coordinates = get_coordinates("Wichita", "KS")
+    print(coordinates)
+    print(url)
+    print(len(url))
 
