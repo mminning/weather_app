@@ -1,6 +1,8 @@
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 import requests as rq
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # GET COORDINATES FROM CITY, STATE
 def get_coordinates(city, state):
@@ -24,6 +26,8 @@ def get_coordinates(city, state):
         # Handle cases where the geocoding service times out
         return get_coordinates(city, state)
 
+
+
 def get_temperatures(city, state, days):
     """ Get's temperature data and pairs it with times and dates every 4 hours.
         Data is obtained from weather.gov API.
@@ -45,6 +49,8 @@ def get_temperatures(city, state, days):
 
         dates = [date["startTime"] for date in forecast_hourly_data["properties"]["periods"]]
         dates = dates[:24*days:4]
+        dates = [datetime.fromisoformat(date) for date in dates]
+        dates = [date.strftime("%c") for date in dates]
 
         temp_date_pairs = dict(zip(dates, temps))
         return temp_date_pairs

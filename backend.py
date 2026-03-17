@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
-from weather_data import get_coordinates
+from weather_data import get_temperatures
 
-get_coordinates(city, state)
+
 
 
 load_dotenv()

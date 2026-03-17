@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+from weather_data import get_temperatures
 
 
 st.title("Forecast Weather App")
@@ -18,7 +19,12 @@ if datatype != None and city != None:
     st.subheader(f"{datatype} for the next {days} days")
     st.write(f"*in {city}*")
 
-    dates = ["1", "2", "3", "4", "5"]
-    temperatures = ["40", "41", "42", "43", "44"]
-    figure = px.line(x=dates[:days], y=temperatures[:days], labels={"x": "Date", "y": "Temperature"})
+    if datatype == "Temperature":
+        temp_data = get_temperatures(city, state, days)
+        dates = []
+        temperatures = []
+        for date, temp in temp_data.items():
+            dates.append(date)
+            temperatures.append(temp)
+    figure = px.bar(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature"})
     st.plotly_chart(figure)
