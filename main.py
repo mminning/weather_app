@@ -18,13 +18,16 @@ datatype = st.selectbox("Select type of forecast", ["Temperature", "Precipitatio
 if datatype != None and city != None:
     st.subheader(f"{datatype} for the next {days} days")
     st.write(f"*in {city}*")
-
-    if datatype == "Temperature":
-        temp_data = get_temperatures(city, state, days)
-        dates = []
-        temperatures = []
-        for date, temp in temp_data.items():
-            dates.append(date)
-            temperatures.append(temp)
-    figure = px.bar(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature"}, color_discrete_sequence=["red"])
-    st.plotly_chart(figure)
+    try:
+        if datatype == "Temperature":
+            temp_data = get_temperatures(city, state, days)
+            dates = []
+            temperatures = []
+            for date, temp in temp_data.items():
+                dates.append(date)
+                temperatures.append(temp)
+        figure = px.bar(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature"},
+                        color_discrete_sequence=["red"])
+        st.plotly_chart(figure)
+    except AttributeError:
+        pass
