@@ -45,10 +45,10 @@ def get_temperatures(city, state, days):
         forecast_hourly_data = rq.get(forecast_hourly_url)
         forecast_hourly_data = forecast_hourly_data.json()
         temps = [temp["temperature"] for temp in forecast_hourly_data["properties"]["periods"]]
-        temps = temps[:24*days:4]
+        temps = temps[:24*days:2]
 
         dates = [date["startTime"] for date in forecast_hourly_data["properties"]["periods"]]
-        dates = dates[:24*days:4]
+        dates = dates[:24*days:2]
         dates = [datetime.fromisoformat(date) for date in dates]
         dates = [date.strftime("%c") for date in dates]
 
@@ -58,10 +58,41 @@ def get_temperatures(city, state, days):
         error_message = "City not found."
         return error_message
 
+
+def get_precipitation(city, state, days):
+    """ Get's precipitation data and pairs it with times and dates every 6 hours.
+        Data is obtained from weather.gov API.
+        Arguments: City (string), State (string, 2 character abbrev.), days (integer)"""
+
+    coordinates = get_coordinates(city, state)
+    if coordinates:
+        latitude = coordinates[0]
+        longitude = coordinates[1]
+        get_city = rq.get(f"https://api.weather.gov/points/{latitude},{longitude}")
+        get_city_data = get_city.json()
+        forecast_hourly_url = get_city_data["properties"]["forecastHourly"]
+
+        #get temperature data for specific time range
+        forecast_hourly_data = rq.get(forecast_hourly_url)
+        forecast_hourly_data = forecast_hourly_data.json()
+        precipitation = [prec["probabilityOfPrecipitation"]["value"] for prec in forecast_hourly_data["properties"]["periods"]]
+        precipitation = precipitation[:24*days:2]
+
+        dates = [date["startTime"] for date in forecast_hourly_data["properties"]["periods"]]
+        dates = dates[:24*days:2]
+        dates = [datetime.fromisoformat(date) for date in dates]
+        dates = [date.strftime("%c") for date in dates]
+
+        prec_date_pairs = dict(zip(dates, precipitation))
+        return prec_date_pairs
+    else:
+        error_message = "City not found."
+        return error_message
+
 # Get Data (test)
 if __name__ == "__main__":
-    url = get_temperatures("Wichita", "KS", 2)
-    coordinates = get_coordinates("Wichita", "KS")
+    url = get_temperatures("Fort Wayne", "IN", 2)
+    coordinates = get_coordinates("Fort Wayne", "IN")
     print(coordinates)
     print(url)
     print(len(url))
