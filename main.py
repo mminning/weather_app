@@ -28,8 +28,9 @@ if datatype != None and city != None:
             for date, temp in temp_data.items():
                 dates.append(date)
                 temperatures.append(temp)
+
             figure = px.area(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature"},
-                        color_discrete_sequence=["red"], markers=True)
+                             color_discrete_sequence=["red"], markers=True)
 
             st.plotly_chart(figure)
 
