@@ -7,6 +7,7 @@ def get_coordinates(city, state):
     """ gets coordinates for a city and a state.
     Args: city (string), state (string, 2 letter ALL CAPS abbreviation)
     returns: latitude, longitude"""
+
     geolocator = Nominatim(user_agent="basshog")
 
     try:
@@ -24,6 +25,10 @@ def get_coordinates(city, state):
         return get_coordinates(city, state)
 
 def get_temperatures(city, state, days):
+    """ Get's temperature data and pairs it with times and dates every 4 hours.
+        Data is obtained from weather.gov API.
+        Arguments: City (string), State (string, 2 character abbrev.), days (integer)"""
+
     coordinates = get_coordinates(city, state)
     if coordinates:
         latitude = coordinates[0]
