@@ -15,9 +15,7 @@ datatype = st.selectbox("Select type of forecast", ["Temperature", "Precipitatio
 
 
 # RUN WEATHER DATA FUNCTIONS BASED ON USER INPUT
-if datatype and location != None:
-    st.subheader(f"{datatype} for the next {days} days")
-    st.write(f"*in {city}*")
+if datatype and location and city and state != None:
     try:
 
 #TEMPERATURE
@@ -49,4 +47,4 @@ if datatype and location != None:
 
 
     except AttributeError:
-        pass
+        st.subheader(":red[Please fill in a valid City and State]")
